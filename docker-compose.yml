@@ -1,0 +1,87 @@
+version: '3.8'
+
+networks:
+  nut:
+    name: nut
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/16
+
+services:
+  upsdrvctl:
+    image: mjast/nutgalaxy5500:1.0
+    container_name: upsdrvctl
+    networks:
+      nut:
+        ipv4_address: 172.16.0.2
+    environment:
+      - TZ=<YOUR_TZ>
+    volumes:
+      - ups:/var/state/ups
+      - ./ups_config:/app/config/etc
+    command: ./sbin/upsdrvctl -FF start
+    restart: unless-stopped
+
+  upsd:
+    image: mjast/nutgalaxy5500:1.0
+    container_name: upsd
+    networks:
+      nut:
+        ipv4_address: 172.16.0.3
+    environment:
+      - TZ=<YOUR_TZ>
+    volumes:
+      - ups:/var/state/ups
+      - ./ups_config:/app/config/etc
+    ports:
+      - 3493:3493
+    command: ./sbin/upsd -FF
+    depends_on:
+      - upsdrvctl
+    restart: unless-stopped
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.5
+    container_name: nginx-proxy
+    networks:
+      nut:
+        ipv4_address: 172.16.0.4
+    ports:
+      - 80:80
+    environment:
+      - TZ=<YOUR_TZ>
+      - DEFAULT_HOST=<YOUR_DOMAIN>
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./default_location:/etc/nginx/vhost.d/default_location
+      - /etc/nginx/certs:/etc/nginx/certs
+      - ./static:/var/www/html/static
+    restart: always
+
+  gnut:
+    image: mjast/gnut:0.32
+    container_name: gnut
+    command: sh -c "python3 manage.py migrate && gunicorn --bind 0.0.0.0:8000 webNUT.wsgi:application"
+    networks:
+      nut:
+        ipv4_address: 172.16.0.5
+    expose:
+      - "8000"
+    env_file:
+      - ./.env
+    environment:
+      - VIRTUAL_HOST=<YOUR_DOMAIN>
+      - CSRF_TRUSTED_ORIGINS=<YOUR_DOMAIN>
+      - TZ=<YOUR_TZ>
+      # If you want to use basic Django authentication don't uncomment those lines
+      #- LDAP_SERVER=<LDAP_SERVER>:<LDAP_PORT>
+      #- LDAP_AUTH_SEARCH_BASE=ou=People,dc=<YOUR_DC>,dc=<YOUR_DC>,dc=<YOUR_DC>
+      # If you want any LDAP user to be able to login to admin page, keep the next line commented out
+      #- REQUIRED_GROUP=cn=<YOUR_GROUP>,ou=Groups,dc=<YOUR_DC>,dc=<YOUR_DC>,dc=<YOUR_DC>
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ups_config:/app/ups_config
+
+volumes:
+  ups:

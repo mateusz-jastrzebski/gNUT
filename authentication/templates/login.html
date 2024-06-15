@@ -1,0 +1,25 @@
+{% extends "base_login.html" %}
+{% block content %}
+<div class="login-container">
+  <div class="login-box">
+      <div id="logo">
+          <i class="fa fa-power-off"></i> gNUT
+      </div>
+      <form action="" method="post">
+          {% csrf_token %}
+          <div class="input-group">
+              <label for="username">Username:</label>
+              <input type="text" id="username" name="username" required>
+          </div>
+          <div class="input-group">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required>
+          </div>
+          <button type="submit">Login</button>
+      </form>
+  </div>
+</div>
+{% if error %}
+  <p class="error"><strong>Error:</strong> {{ error }}
+{% endif %}
+{% endblock %}

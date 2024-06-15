@@ -1,0 +1,262 @@
+table.dataTable tbody tr.odd td {
+    background-color: var(--odd-row-background-color);
+}
+
+table.dataTable tbody tr.even {
+    background-color: var(--even-row-background-color);
+}
+
+table.dataTable tbody tr:nth-child(odd):hover td, table.dataTable tbody tr:nth-child(even):hover td {
+    background-color: var(--hover-color);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12pt;
+}
+
+.switch {
+    height: 100px;
+    display: block;
+}
+
+#ups_table {
+    text-align: center;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+}
+
+.theme-switch input {
+    display: none;
+  }
+
+  .slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+  }
+  
+  input:checked + .slider {
+    background-color: #2b2b2b;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+  
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+
+.highlighted {
+    color: var(--link-color);
+    border-color: var(--link-color);
+}
+
+.dataTables_length {
+    display: none;
+}
+
+
+:root {
+    --background-color: #efe9e7;
+    --sidebar-color: #b3a6a2;
+    --odd-row-background-color: white;
+    --even-row-background-color: var(--background-color);
+    --text-color: #222;
+    --link-color: #9E2996;
+    --hover-color: #f7a3f2;
+    --border-color: black;
+}
+
+
+a, a:hover, a:visited {
+    color: var(--link-color);
+}
+
+
+[data-theme="dark"] {
+    --background-color: #222;
+    --odd-row-background-color: var(--background-color);
+    --even-row-background-color: #353433;
+    --text-color: #efe9e7;
+    --border-color: white;
+}
+
+.expand, .expand-active {
+    font-size: 10pt;
+}
+
+.expand {
+    display: none;
+}
+
+.pagination > li.active > a, .pagination > li.active > span{
+    background-color: var(--link-color);
+}
+
+
+input.value {
+    width: 100%;
+    color: var(--text-color);
+    background-color: var(--background-color);
+}
+
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: var(--sidebar-color);
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+    font-size: 20px;
+    text-align: center;
+}
+
+#logo {
+    color: #9E2996;
+    font-size: 32px;
+}
+
+#empty {
+    height: 10vh;
+}
+
+.top-container {
+    position: relative;
+    padding: 20px;
+}
+
+#help {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0px;
+    width: 30px;
+    height: 30px;
+    border: 2px solid;
+    border-color: var(--text-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar a, #logout {
+    display: block;
+    color: var(--link-color);
+    padding: 5px 10px 0px 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.copyright {
+    color: #000;
+    font-size: 10px;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.copyright a {
+    font-size: 14px;
+}
+
+
+.sidebar a:hover {
+    background-color: #555;
+    color: white;
+}
+
+@media screen and (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .sidebar a {float: left;}
+}
+
+@media screen and (max-width: 400px) {
+    .sidebar a {
+        text-align: center;
+        float: none;
+    }
+}
+
+.login-container {
+    top: 30%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.login-box {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+input[type="text"], input[type="password"] {
+    text-align: center;
+    padding: 10px;
+    margin: 0 auto;
+    display: block;
+}

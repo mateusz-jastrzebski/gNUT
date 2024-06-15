@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <title>{{ title }} - gNUT</title>
+    <link rel="icon" type="image/ico" href="{% static '/images/favicon.ico' %}">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"/>
+    <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/main.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/css/dropdown.css' %}" />
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' />
+    <script type="text/javascript" src="//code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static '/js/dropdown.js' %}"></script>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+<div class="sidebar">
+    <a href="{% url 'ups:home' %}" id="logo"><i class="fa fa-power-off"></i> gNUT</a>
+    <div id="empty"></div>
+    <a href="{% url 'authentication:login_view' %}">Log in</a>
+    <div class="switch">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider round"></div>
+        </label>
+    </div>
+    <div class="copyright">
+        <a href="https://github.com/mateusz-jastrzebski/gNUT">
+            Beta {{ APP_VERSION }}<br>
+            <i class="fa fa-github" aria-hidden="true"></i> Check for Updates</a>
+        <p>GNU GPL 3.0<br>{{ YEAR_OF_RELEASE }} Mateusz Jastrzębski</p>
+    </div>
+</div>
+<div id="main">
+    <div class="col-sm-8 col-sm-offset-2 col-xs-12 col-xs-offset-0">
+        <div class="row">
+            <script type="text/javascript" src="{% static '/js/common.js' %}"></script>
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+        <div class="row">
+            <br><br><br>
+        </div>
+    </div>
+</div>
+</body>
+</html>

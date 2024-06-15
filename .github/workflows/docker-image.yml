@@ -1,0 +1,63 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    # Fetch all tags to determine the latest tag
+    - name: Fetch all tags
+      run: git fetch --tags
+
+    # Determine the new version tag
+    - name: Determine new version tag
+      id: new_version
+      run: |
+        latest_tag=$(git tag --list --sort=-v:refname | head -n 1)
+        if [ -z "$latest_tag" ]; then
+          new_tag="0.32"
+        else
+          new_tag=$(echo $latest_tag | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+        fi
+        echo "new_tag=${new_tag}" >> $GITHUB_ENV
+        echo "New tag: ${new_tag}"
+
+    # Create a new tag
+    - name: Create a new tag
+      run: |
+        git tag ${{ env.new_tag }}
+        git push origin ${{ env.new_tag }}
+
+    # Create a release for the new tag
+    - name: Create a release
+      uses: actions/create-release@v1.1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.new_tag }}
+        release_name: Release ${{ env.new_tag }}
+        draft: false
+        prerelease: false
+
+    # Build the Docker image
+    - name: Build the Docker image
+      run: docker build . --build-arg APP_VERSION=${{ env.new_tag }} --file Dockerfile --tag ${{ vars.DOCKER_USERNAME }}/gnut:${{ env.new_tag }} --tag ${{ vars.DOCKER_USERNAME }}/gnut:latest
+
+    # Log in to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ vars.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    # Push the Docker image to Docker Hub with the new tag and the latest tag
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker push ${{ vars.DOCKER_USERNAME }}/gnut:${{ env.new_tag }}
+        docker push ${{ vars.DOCKER_USERNAME }}/gnut:latest

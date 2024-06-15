@@ -1,0 +1,8 @@
+Django
+psycopg
+python_decouple
+gunicorn
+django_python3_ldap
+nut2
+docker
+python-dotenv

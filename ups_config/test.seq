@@ -1,0 +1,7 @@
+battery.charge: 100
+ups.load: 15
+battery.charge.low: 10
+ups.status: OL
+TIMER 15
+ups.status: OB
+TIMER 15

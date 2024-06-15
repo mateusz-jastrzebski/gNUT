@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <title>{{ title }} - gNUT</title>
+    <link rel="icon" type="image/ico" href="{% static '/images/favicon.ico' %}">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+    <script src="https://kit.fontawesome.com/107439f99f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/main.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/css/dropdown.css' %}" />
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' />
+    <script type="text/javascript" src="//code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static '/js/dropdown.js' %}"></script>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+<div class="sidebar">
+    <a href="{% url 'ups:home' %}" id="logo"><i class="fa fa-power-off"></i> gNUT</a>
+    <div id="empty"></div>
+    <a id="UPS"><i class="fa-solid fa-bars"></i> Drivers</a>
+    <div id="expandUPS" class="expand">
+        <a href="{% url 'ups:home' %}" id="general">General</a>
+        <a id="templates">Templates<br><div style="font-size: 7pt; font-style: italic;">(Coming soon..)</div></a>
+        <a href="{% url 'configuration:configure_driver_advanced' %}" id="advanced">Advanced</a>
+    </div>
+    <a id="UPSMON"><i class="fa-solid fa-bars"></i> Monitoring</a>
+    <div id="expandUPSMON" class="expand">
+        <a href="{% url 'configuration:configure_upsmon' %}" id="upsmon">This Server</a>
+        <a>Other Servers<br><div style="font-size: 7pt; font-style: italic;">(Coming soon..)</div></a>
+    </div>
+    <a id="UPSD"><i class="fa-solid fa-bars"></i> Server</a>
+    <div id="expandUPSD" class="expand">
+        <a href="{% url 'configuration:configure_upsd' %}" id="upsd">General</a>
+        <a>Manage users<br><div style="font-size: 7pt; font-style: italic;">(Coming soon..)</div></a>
+        <a>gNUT Admin Page<br><div style="font-size: 7pt; font-style: italic;">(Coming soon..)</div></a>
+    </div>
+    <div id="empty"></div>
+    <div class="switch">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider round"></div>
+        </label>
+    </div>
+    <form method="post" action="{% url 'authentication:logout' %}" id="logout-form">
+        {% csrf_token %}
+        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log out</a>
+    </form>
+    <div id="empty"></div>
+    <div class="copyright">
+        <a href="https://github.com/mateusz-jastrzebski/gNUT">
+            Beta {{ APP_VERSION }}<br>
+            <i class="fa fa-github" aria-hidden="true"></i> Check for Updates</a>
+        <p>GNU GPL 3.0<br>{{ YEAR_OF_RELEASE }} Mateusz Jastrzębski</p>
+    </div>
+</div>
+<div id="main">
+    <div class="col-sm-8 col-sm-offset-2 col-xs-12 col-xs-offset-0">
+        <div class="row">
+            <script type="text/javascript" src="{% static '/js/common.js' %}"></script>
+            <script type="text/javascript">var linkId = "{{ link_id }}";</script>
+            <script type="text/javascript" src="{% static '/js/common_admin.js' %}"></script>
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+                <button id="editButton">Edit</button>
+                <button id="saveButton">Save</button>
+            </div>
+        </div>
+        <div class="row">
+            <br><br><br>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10-dev/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+<script type="text/javascript">
+    $("#mainPage").addClass("highlighted");
+
+    $(function(){
+        $("#var_table").dataTable( {
+            "order": [],
+            "paging": false,
+            "searching": false,
+            "info": false,
+            dom: 'Bfrtip',
+        });
+    });
+
+$(document).ready(function () {
+            $("#editButton").click(function () {
+                $(".dropbtn:not(.editable)").addClass("editable");
+                $(".value[readonly=true]").prop("readonly", false);
+                $("#editButton:not(.editMode)").addClass("editMode");
+            });
+        });
+
+document.getElementById('saveButton').addEventListener('click', function () {
+    if ($("#editButton").hasClass("editMode")){
+        document.getElementById(pageName).submit();
+    }
+});
+</script>
+</body>
+</html>

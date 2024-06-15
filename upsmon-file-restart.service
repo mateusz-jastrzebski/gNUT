@@ -1,0 +1,11 @@
+[Unit]
+Description=File Monitor Service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/systemctl restart nut-monitor
+Restart=no
+RestartSec=0
+
+[Install]
+WantedBy=multi-user.target

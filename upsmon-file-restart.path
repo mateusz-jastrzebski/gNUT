@@ -1,0 +1,8 @@
+[Unit]
+Description=File Monitor Path Unit
+
+[Path]
+PathChanged=<ABSOLUTE_PATH_TO_YOUR_do-not-touch_FILE>
+
+[Install]
+WantedBy=multi-user.target
