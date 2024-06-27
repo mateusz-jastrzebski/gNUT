@@ -1,47 +1,39 @@
-# gNUT
+# gNUT (graphical Network UPS Tools)
 
-Acts as a graphical interface website for centralized NUT's upsd server.
-Inspired by [Rshipp's webNUT](https://github.com/rshipp/webNUT) but rewritten in Django
+Graphical webservice for centralized NUT's upsd server.
 
-Authentication is possible with LDAP or with 
+Inspired by [Rshipp's webNUT](https://github.com/rshipp/webNUT) but rewritten in Django.
+
+Authentication is possible with randomly generated Django superuser password and LDAP.
+
+Currently program supports changing UPS driver's parameters, that are essential for a proper client emergency shutdown. No more fiddling with editing the file manually on the production server!
+
 
 ## [Click here for Installation setup](#installation)
 
 ## Development
 
-#### If you want to develop this project, firstly create a `.env` file with environmental variables needed for startup
+#### If you want to contribute to this project, uncomment `Debug=True` inside `.env` file and edit it with your needs
 
-`.env`
 
-```
-DEBUG=True
+## It is best suited to test this webservice with a UPS running somewhere nearby
 
-SECRET_KEY=<YOUR_KEY>
-
-# This does not really matter for testing
-#CSRF_TRUSTED_ORIGINS=<YOUR_DOMAIN>
-
-TZ=<YOUR_TZ>
-
-# If you want LDAP based auth
-#LDAP_SERVER=<YOUR_LDAP_SERVER_IP>:<PORT>
-#LDAP_AUTH_SEARCH_BASE=ou=People,dc=<YOUR_DOMAIN>,dc=<YOUR_DOMAIN>,dc=<YOUR_DOMAIN>
-# Optional, all users existing in LDAP can see admin page if not set
-#REQUIRED_GROUP=cn=<YOUR_GROUP>,ou=Groups,dc=<YOUR_DOMAIN>,dc=<YOUR_DOMAIN>,dc=<YOUR_DOMAIN>
-```
-
-## Then obviously you should have a UPS running somewhere
-
->If you don't you can use `dummy-ups` driver
+>If you don't have an opportunity to have one, you can use the `dummy-ups` driver
 >
->In `ups.conf` type:
+>The `ups.conf` file that is inside the repo is currently configured to use such a driver
+>
+>You can modify and/or add dummy drivers however you like, they can even share the same or multiple sequence files
 >```
 >[test]
 >driver = dummy-ups
 >port = test.seq
 >desc = "Test driver"
 >```
->Then create a file `test.seq` in the same folder with your desired UPS outputs loop
+>Then edit the sequence file `test.seq` with your desired UPS outputs loop
+>
+>You can use any UPS variables here that are possible to access using `upsc` command.
+>
+>The following sequence will switch `ups.status` from On-Line to On-Battery each 15 seconds.
 >```
 >battery.charge: 100
 >ups.load: 15
@@ -80,11 +72,19 @@ _On Windows_
 pip3 install -r requirements.txt
 ```
 
-4. Create superuser
+4. Run migrate
 
 ```
-python3 manage.py createsuperuser
+python3 manage.py migrate
 ```
+
+5. Create superuser
+
+```
+python3 manage.py createdefaultadmin
+```
+
+6. The credentials are written to the `superuser.txt` file
 
 5. Run server
 
@@ -106,16 +106,24 @@ gunicorn --bind 0.0.0.0:8000 webNUT.wsgi:application
 
 ## Docker deploy
 
-1. Make a directory for your files
+1. Make a directory for your files and download files needed for starting the application
 
-2. Create a directory inside it for your NUT configs
+```
+mkdir -p gnut/ups_config gnut/db_data
+wget -O gnut/docker-compose.yml https://raw.githubusercontent.com/mateusz-jastrzebski/gNUT/master/docker-compose.yml
+wget -O gnut/.env https://raw.githubusercontent.com/mateusz-jastrzebski/gNUT/master/.env
+```
+
+**For servers using the obsolete `docker-compose` package (instead of `docker compose` plugin) uncomment the `version` line in `docker-compose.yml`**
+
+2. Insert your configs
 
 *At this moment gNUT **does not** let you create configs from the web app (just edit existing ones), keep in touch..*
 
-3. Insert your configs
+Fill in data in `.env` (for gNUT configuration) and `docker-compose.yml` when using containers bundle (mjast/nutgalaxy5500 or other NUT version + reverse proxy)
 
 
-`upsd.users`
+`gnut/ups_config/upsd.users`
 
 ```
 [<ADMIN_NAME>]
@@ -127,7 +135,7 @@ password=<SLAVE_PASSWORD>
 upsmon slave
 ```
 
-`ups.conf`
+`gnut/ups_config/ups.conf`
 
 ```
 maxretry = 5
@@ -164,7 +172,7 @@ ignorelb
 override.battery.charge.low = 15
 ```
 
-`upsmon.conf`
+`gnut/ups_config/upsmon.conf`
 
 ```
 MINSUPPLIES <NUMBER_OF_UPS_NEEDED_FOR_STAYING_UP>
@@ -181,21 +189,19 @@ MONITOR <UPS_NAME>@localhost 1 <ADMIN_NAME> <ADMIN_PASSWORD> master
 <REPEAT_FOR_EACH_UPS_YOU_WANT_THIS_SYSTEM_TO_RELY_ON>
 ```
 
-4. Create a .env file in the top directory
-
-5. Generate a secret key and paste it into `.env` file
+3. Generate a secret key and paste it into `.env` file
 
 ```
 tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 32;
 ```
 
-`.env`
+`gnut/.env`
 
 ```
 SECRET_KEY=<COPIED_SECRET_KEY>
 ```
 
-6. Setup a service for rootless `ups-monitor` restart (if host needs to be shutdown)
+4. Setup a service for rootless `ups-monitor` restart (if host needs to be shutdown)
 
 `/usr/lib/systemd/system/upsmon-file-restart.service`
 
@@ -234,15 +240,15 @@ MODE=netclient
 
 Delete `/etc/nut/upsmon.conf` and set a symbolic link from your `ups_config` folder
 
-7. Run `docker-compose up -d`
+5. Run `docker-compose up -d`
 
-8. If configured not to work with LDAP, create superuser with this command
+6. If configured not to work with LDAP, create superuser with this command
 
 ```
 docker exec -it gnut python3 manage.py createsuperuser
 ```
 
-9. For testing you can either type:
+7. For testing you can either type:
 
 ```
 upsc -l
