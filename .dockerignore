@@ -2,6 +2,7 @@ default_location
 .git/
 .env
 ups_config/
+db_data/
 screenshots/
 upsmon-file-restart.path
 upsmon-file-restart.service

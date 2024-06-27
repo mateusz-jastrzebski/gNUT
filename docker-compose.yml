@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 networks:
   nut:
@@ -16,7 +16,7 @@ services:
       nut:
         ipv4_address: 172.16.0.2
     environment:
-      - TZ=<YOUR_TZ>
+      - TZ={{ TZ }}
     volumes:
       - ups:/var/state/ups
       - ./ups_config:/app/config/etc
@@ -30,7 +30,7 @@ services:
       nut:
         ipv4_address: 172.16.0.3
     environment:
-      - TZ=<YOUR_TZ>
+      - TZ={{ TZ }}
     volumes:
       - ups:/var/state/ups
       - ./ups_config:/app/config/etc
@@ -50,8 +50,8 @@ services:
     ports:
       - 80:80
     environment:
-      - TZ=<YOUR_TZ>
-      - DEFAULT_HOST=<YOUR_DOMAIN>
+      - TZ={{ TZ }}
+      - DEFAULT_HOST={{ DEFAULT_HOST }}
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./default_location:/etc/nginx/vhost.d/default_location
@@ -60,27 +60,16 @@ services:
     restart: always
 
   gnut:
-    image: mjast/gnut:0.32
+    image: mjast/gnut:0.33
     container_name: gnut
-    command: sh -c "python3 manage.py migrate && gunicorn --bind 0.0.0.0:8000 webNUT.wsgi:application"
     networks:
       nut:
         ipv4_address: 172.16.0.5
-    expose:
-      - "8000"
     env_file:
       - ./.env
-    environment:
-      - VIRTUAL_HOST=<YOUR_DOMAIN>
-      - CSRF_TRUSTED_ORIGINS=<YOUR_DOMAIN>
-      - TZ=<YOUR_TZ>
-      # If you want to use basic Django authentication don't uncomment those lines
-      #- LDAP_SERVER=<LDAP_SERVER>:<LDAP_PORT>
-      #- LDAP_AUTH_SEARCH_BASE=ou=People,dc=<YOUR_DC>,dc=<YOUR_DC>,dc=<YOUR_DC>
-      # If you want any LDAP user to be able to login to admin page, keep the next line commented out
-      #- REQUIRED_GROUP=cn=<YOUR_GROUP>,ou=Groups,dc=<YOUR_DC>,dc=<YOUR_DC>,dc=<YOUR_DC>
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./db_data:/app/db_data
       - ./ups_config:/app/ups_config
 
 volumes:
