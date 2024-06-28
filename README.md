@@ -86,6 +86,10 @@ python3 manage.py createdefaultadmin
 
 6. The credentials are written to the `superuser.txt` file
 
+```
+sudo docker exec -it gnut sh -c 'cat superuser.txt'
+```
+
 5. Run server
 
 ```
@@ -242,10 +246,10 @@ Delete `/etc/nut/upsmon.conf` and set a symbolic link from your `ups_config` fol
 
 5. Run `docker-compose up -d`
 
-6. If configured not to work with LDAP, create superuser with this command
+6. Default superuser credentials:
 
 ```
-docker exec -it gnut python3 manage.py createsuperuser
+sudo docker exec -it gnut sh -c 'cat superuser.txt'
 ```
 
 7. For testing you can either type:

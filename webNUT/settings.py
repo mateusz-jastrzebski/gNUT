@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'webNUT.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db_data', 'db.sqlite3'),
     }
 }
 
@@ -122,9 +122,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 if os.getenv('LDAP_SERVER'):
-    AUTHENTICATION_BACKENDS = [
-        'django_python3_ldap.auth.LDAPBackend',
-    ]
+    AUTHENTICATION_BACKENDS.append('django_python3_ldap.auth.LDAPBackend')
 
     LDAP_AUTH_HOST = os.getenv('LDAP_SERVER').split(':')[0]
     LDAP_AUTH_PORT = os.getenv('LDAP_SERVER').split(':')[1]
@@ -187,11 +185,11 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
+USE_TZ = False
 TIME_ZONE = os.getenv('TZ', 'UTC')
 
 USE_I18N = True
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
