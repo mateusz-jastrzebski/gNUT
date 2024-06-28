@@ -71,6 +71,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./db_data:/app/db_data
       - ./ups_config:/app/ups_config
+    expose:
+      - "${PORT}"
 
 volumes:
   ups:

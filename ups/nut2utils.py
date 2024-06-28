@@ -21,10 +21,7 @@ class WebNUT(object):
                 for ups in ups_dict:
                     try:
                         ups_vars = client.list_vars(ups)
-                    except nut2.PyNUTError:
-                        continue
-
-                    ups_list[ups] = {
+                        ups_list[ups] = {
                         'ups': ups,
                         'description': client.description(ups),
                         'status': self._get_ups_status(ups_vars),
@@ -32,6 +29,8 @@ class WebNUT(object):
                         'load': ups_vars['ups.load'],
                         'batterylow': ups_vars['battery.charge.low'],
                     }
+                    except (nut2.PyNUTError, KeyError):
+                        continue                    
 
                 return ups_list
         except nut2.PyNUTError:

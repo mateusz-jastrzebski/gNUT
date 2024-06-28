@@ -20,7 +20,7 @@ def login_view(request):
             return redirect('ups:home')
         else:
             error = "Invalid credentials. Please try again."
-            return render(request, 'login.html', {'error': error})
+            return render(request, 'login.html', {'title': 'Authentication', 'error': error})
 
     context = {'title': 'Authentication'}
     return render(request, 'login.html', context)
